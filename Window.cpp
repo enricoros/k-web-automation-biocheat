@@ -23,18 +23,20 @@
 #include "SimpleHinter.h"
 #include "ui_Window.h"
 
+#include <QCursor>
+#include <QDesktopWidget>
 #include <QFile>
 #include <QImage>
-#include <QDesktopWidget>
 #include <QSettings>
 
 #define DEFAULT_WIDTH 252
 #define DEFAULT_HEIGHT 330
 
-Window::Window( QWidget *parent )
+AppWindow::AppWindow( QWidget *parent )
     : QWidget( parent )
     , ui( new Ui::WindowForm )
     , m_settings( new QSettings() )
+    , m_invalidPixmap( ":/data/icon-invalid.png" )
 {
     // create ui
     ui->setupUi( this );
@@ -60,8 +62,12 @@ Window::Window( QWidget *parent )
         ui->onTop->setChecked( m_settings->value( "rect/ontop" ).toBool() );
         ui->hBlocks->setValue( m_settings->value( "algo/hblocks" ).toInt() );
         ui->vBlocks->setValue( m_settings->value( "algo/vblocks" ).toInt() );
+        if ( m_settings->contains( "algo/valid" ) )
+            ui->valid->setValue( m_settings->value( "algo/valid" ).toInt() );
         ui->sensitivity->setValue( m_settings->value( "algo/sensitivity" ).toInt() );
         ui->highlight->setChecked( m_settings->value( "algo/highlight" ).toBool() );
+        if ( m_settings->contains( "algo/apBest" ) )
+            ui->apBest->setChecked( m_settings->value( "algo/apBest" ).toBool() );
     }
     connect( ui->left, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
     connect( ui->top, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
@@ -95,7 +101,7 @@ Window::Window( QWidget *parent )
     slotCapParamsChanged();
 }
 
-Window::~Window()
+AppWindow::~AppWindow()
 {
     saveSettings();
     delete m_settings;
@@ -106,7 +112,7 @@ Window::~Window()
     delete ui;
 }
 
-void Window::saveSettings()
+void AppWindow::saveSettings()
 {
     m_settings->setValue( "rect/left", ui->left->value() );
     m_settings->setValue( "rect/top", ui->top->value() );
@@ -116,11 +122,13 @@ void Window::saveSettings()
     m_settings->setValue( "rect/ontop", ui->onTop->isChecked() );
     m_settings->setValue( "algo/hblocks", ui->hBlocks->value() );
     m_settings->setValue( "algo/vblocks", ui->vBlocks->value() );
+    m_settings->setValue( "algo/valid", ui->valid->value() );
     m_settings->setValue( "algo/sensitivity", ui->sensitivity->value() );
     m_settings->setValue( "algo/highlight", ui->highlight->isChecked() );
+    m_settings->setValue( "algo/apBest", ui->apBest->isChecked() );
 }
 
-void Window::slotOnTopChanged()
+void AppWindow::slotOnTopChanged()
 {
     Qt::WindowFlags flags = windowFlags();
     if ( ui->onTop->isChecked() )
@@ -131,39 +139,101 @@ void Window::slotOnTopChanged()
     show();
 }
 
-void Window::slotCapParamsChanged()
+void AppWindow::slotCapParamsChanged()
 {
     QRect captureRect( ui->left->value(), ui->top->value(), ui->width->value(), ui->height->value() );
-    int adjW = captureRect.width() % 30;
-    int adjH = captureRect.height() % 30;
+    int adjW = 0; //captureRect.width() % 30;
+    int adjH = 0; //captureRect.height() % 30;
     m_capture->setGeometry( captureRect.adjusted( 0, 0, adjW, adjH ) );
     m_capture->setFrequency( ui->frequency->value() );
 }
 
-void Window::slotRecParamsChanged()
+void AppWindow::slotRecParamsChanged()
 {
     m_recognizer->setup( ui->hBlocks->value(), ui->vBlocks->value() );
 }
 
-void Window::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor )
+#ifdef Q_OS_UNIX
+
+// use XInput for queuing a click event
+#include <QX11Info>
+#include <X11/extensions/XTest.h>
+void leftClick()
+{
+    XTestFakeButtonEvent( QX11Info::display(), 1, true, CurrentTime );
+}
+
+#elif Q_OS_WIN32
+
+void leftClick()
+{
+    INPUT Input={0};
+
+    // left down
+    Input.type = INPUT_MOUSE;
+    Input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+    ::SendInput( 1, &Input, sizeof(INPUT) );
+
+    // left up
+    ::ZeroMemory( &Input, sizeof(INPUT) );
+    Input.type = INPUT_MOUSE;
+    Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+    ::SendInput( 1, &Input, sizeof(INPUT) );
+}
+
+#else
+
+#warning leftClick not implemented for this platform
+
+#endif
+
+void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor )
 {
     // show original image
     ui->visualizer->setMinimumSize( pixmap.size() );
     ui->visualizer->setPixmapCursorPos( cursor );
-    if ( ui->display1->isChecked() )
-        ui->visualizer->setOriginalPixmap( pixmap );
+    if ( ui->display1->isChecked() ) {
+        ui->visualizer->setPixmap( pixmap );
+        return;
+    }
 
-    // process image
+    // recognize image
     bool displayRec = ui->display2->isChecked();
     float sensitivity = (float)ui->sensitivity->value() / 100.0;
     RecoResult rr = m_recognizer->recognize( pixmap, sensitivity, displayRec );
-    if ( displayRec )
-        ui->visualizer->setOriginalPixmap( m_recognizer->output() );
+    if ( displayRec ) {
+        ui->visualizer->setPixmap( m_recognizer->output() );
+        return;
+    }
 
-    // show results
-    if ( ui->display3->isChecked() ) {
-        bool highlight = ui->highlight->isChecked();
-        m_hinter->process( rr, pixmap, highlight );
-        ui->visualizer->setOriginalPixmap( m_hinter->output() );
+    // bail out if too invalid
+    if ( rr.invalid >= ui->valid->value() ) {
+        ui->visualizer->setPixmap( m_invalidPixmap );
+        return;
+    }
+
+    // find hints and show result
+    bool process = ui->display3->isChecked() | ui->display4->isChecked();
+    if ( !process )
+        return;
+
+    HintResults hr = m_hinter->process( rr, pixmap, ui->highlight->isChecked() );
+    ui->visualizer->setPixmap( m_hinter->output() );
+
+    // autoplay, if asked
+    if ( !hr.isEmpty() && ui->display4->isChecked() ) {
+
+        bool useBest = ui->apBest->isChecked();
+        HintResult r = useBest ? hr.first() : hr.at( qrand() % hr.size() );
+
+        if ( useBest ) {
+            QCursor::setPos( ((qrand() % 2) ? r.mouseFrom : r.mouseTo) + m_capture->geometry().topLeft() );
+            leftClick();
+        } else {
+            QCursor::setPos( r.mouseFrom + m_capture->geometry().topLeft() );
+            leftClick();
+            QCursor::setPos( r.mouseTo + m_capture->geometry().topLeft() );
+            leftClick();
+        }
     }
 }

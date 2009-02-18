@@ -30,8 +30,8 @@ class Visualizer : public QFrame
     public:
         Visualizer( QWidget * parent = 0 );
 
-        void setOriginalPixmap( const QPixmap & pixmap );
-        QPixmap originalPixmap() const;
+        void setPixmap( const QPixmap & pixmap );
+        QPixmap pixmap() const;
 
         void setPixmapCursorPos( const QPoint & pos );
         QPoint pixmapCursorPos() const;

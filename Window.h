@@ -29,12 +29,12 @@ class QSettings;
 
 namespace Ui { class WindowForm; }
 
-class Window : public QWidget
+class AppWindow : public QWidget
 {
     Q_OBJECT
     public:
-        Window( QWidget * parent = 0 );
-        ~Window();
+        AppWindow( QWidget * parent = 0 );
+        ~AppWindow();
 
     private:
         void saveSettings();
@@ -44,6 +44,7 @@ class Window : public QWidget
         Recognizer * m_recognizer;
         SimpleHinter * m_hinter;
         QSettings * m_settings;
+        QPixmap m_invalidPixmap;
 
     private Q_SLOTS:
         void slotOnTopChanged();

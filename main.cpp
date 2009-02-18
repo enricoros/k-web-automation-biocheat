@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     a.setApplicationName( "BioCheat" );
     a.setApplicationVersion( "0.9" );
 
-    Window w;
+    AppWindow w;
     w.show();
 
     return a.exec();

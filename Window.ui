@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>370</width>
-    <height>390</height>
+    <width>347</width>
+    <height>319</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,7 +127,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="xOffsetLabel_2">
         <property name="text">
-         <string>H Blocks</string>
+         <string>Hor</string>
         </property>
        </widget>
       </item>
@@ -144,7 +144,7 @@
       <item row="0" column="2">
        <widget class="QLabel" name="regionWidthLabel_2">
         <property name="text">
-         <string>V Blocks</string>
+         <string>Vert</string>
         </property>
        </widget>
       </item>
@@ -161,10 +161,33 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="regionWidthLabel_3">
+        <property name="text">
+         <string>Valid</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QSpinBox" name="valid">
+        <property name="suffix">
+         <string/>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>20</number>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="xOffsetLabel_3">
         <property name="text">
-         <string>Sensitivity</string>
+         <string>Sens</string>
         </property>
        </widget>
       </item>
@@ -180,8 +203,28 @@
       </item>
       <item row="1" column="2" colspan="2">
        <widget class="QCheckBox" name="highlight">
+        <property name="toolTip">
+         <string>If there are 4-combos or 5-combos, show only that moves and hide the others.</string>
+        </property>
         <property name="text">
-         <string>Hightlight 4 / 5</string>
+         <string>Best Moves</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4" colspan="2">
+       <widget class="QCheckBox" name="apBest">
+        <property name="toolTip">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If &lt;span style=&quot; font-weight:600;&quot;&gt;selected&lt;/span&gt;, Autoplay using the best move only. If &lt;span style=&quot; font-weight:600;&quot;&gt;unselected&lt;/span&gt;, use a random move.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Best AP</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -193,9 +236,6 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>Display</string>
-     </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
        <widget class="QRadioButton" name="display1">
@@ -214,14 +254,14 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QRadioButton" name="display3">
+      <item row="0" column="3">
+       <widget class="QRadioButton" name="display4">
         <property name="text">
-         <string>Hints</string>
+         <string>AutoPlay!</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="3">
+      <item row="1" column="0" colspan="4">
        <widget class="Visualizer" name="visualizer">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -234,6 +274,13 @@
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QRadioButton" name="display3">
+        <property name="text">
+         <string>Hints</string>
         </property>
        </widget>
       </item>

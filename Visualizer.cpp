@@ -24,7 +24,7 @@ Visualizer::Visualizer( QWidget * parent )
 {
 }
 
-void Visualizer::setOriginalPixmap( const QPixmap & pixmap )
+void Visualizer::setPixmap( const QPixmap & pixmap )
 {
     m_origPixmap = pixmap;
     update();
@@ -41,7 +41,7 @@ QPoint Visualizer::pixmapCursorPos() const
     return m_pixCursorPos;
 }
 
-QPixmap Visualizer::originalPixmap() const
+QPixmap Visualizer::pixmap() const
 {
     return m_origPixmap;
 }

@@ -28,6 +28,7 @@ struct HintResult {
     int fromX, fromY;
     int toX, toY;
     int count;
+    QPoint mouseFrom, mouseTo;
 };
 typedef QList<HintResult> HintResults;
 

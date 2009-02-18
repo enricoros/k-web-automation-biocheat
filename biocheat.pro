@@ -20,3 +20,4 @@ HEADERS += Window.h \
     Classifier.h
 FORMS += Window.ui
 RESOURCES += data/data.qrc
+unix: LIBS += -lXtst

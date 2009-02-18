@@ -96,7 +96,11 @@ HintResults SimpleHinter::process( const RecoResult & recoResult, const QPixmap 
     bool redLine = frameCnt > 5;
     if ( ++frameCnt > 10 )
         frameCnt = 0;
-    foreach ( const HintResult & hint, results ) {
+    HintResults::iterator hIt = results.begin(), hEnd = results.end();
+    for ( ; hIt != hEnd; ++hIt ) {
+        // take the modifyable reference (for updating mouse pos)
+        HintResult & hint = *hIt;
+
         // display only 4s or 5s if above 3
         if ( hint.count > 3 && highlight )
             gotMore = true;
@@ -107,6 +111,8 @@ HintResults SimpleHinter::process( const RecoResult & recoResult, const QPixmap 
         float y1 = ((float)hint.fromY + 0.5) * (float)ph / (float)recoResult.rows;
         float x2 = ((float)hint.toX + 0.5) * (float)pw / (float)recoResult.columns;
         float y2 = ((float)hint.toY + 0.5) * (float)ph / (float)recoResult.rows;
+        hint.mouseFrom = QPoint( x1, y1 );
+        hint.mouseTo = QPoint( x2, y2 );
         QRect rect( (int)x1 - icoW / 2, (int)y1 - icoH / 2, icoW, icoH );
 
         // draw hilight and line
