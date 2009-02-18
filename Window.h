@@ -25,6 +25,7 @@ class Capture;
 class Classifier;
 class Recognizer;
 class SimpleHinter;
+class QSettings;
 
 namespace Ui { class WindowForm; }
 
@@ -36,13 +37,16 @@ class Window : public QWidget
         ~Window();
 
     private:
+        void saveSettings();
         Ui::WindowForm * ui;
         Capture * m_capture;
         Classifier * m_classifier;
         Recognizer * m_recognizer;
         SimpleHinter * m_hinter;
+        QSettings * m_settings;
 
     private Q_SLOTS:
+        void slotOnTopChanged();
         void slotCapParamsChanged();
         void slotRecParamsChanged();
         void slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor );

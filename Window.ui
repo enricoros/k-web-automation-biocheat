@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>331</width>
-    <height>326</height>
+    <width>370</width>
+    <height>390</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,18 +17,18 @@
    <item>
     <widget class="QGroupBox" name="capBox">
      <property name="title">
-      <string>Capture</string>
+      <string>Capture - Select Region</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QLabel" name="xOffsetLabel">
         <property name="text">
-         <string>Offset X</string>
+         <string>Left</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="xOffset">
+       <widget class="QSpinBox" name="left">
         <property name="suffix">
          <string> px</string>
         </property>
@@ -37,12 +37,12 @@
       <item row="0" column="2">
        <widget class="QLabel" name="regionWidthLabel">
         <property name="text">
-         <string>Region Width</string>
+         <string>Width</string>
         </property>
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QSpinBox" name="regionWidth">
+       <widget class="QSpinBox" name="width">
         <property name="suffix">
          <string> px</string>
         </property>
@@ -51,12 +51,12 @@
       <item row="1" column="0">
        <widget class="QLabel" name="yOffsetLabel">
         <property name="text">
-         <string>Offset Y</string>
+         <string>Top</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="yOffset">
+       <widget class="QSpinBox" name="top">
         <property name="suffix">
          <string> px</string>
         </property>
@@ -65,12 +65,12 @@
       <item row="1" column="2">
        <widget class="QLabel" name="regionHeightLabel">
         <property name="text">
-         <string>Region Height</string>
+         <string>Height</string>
         </property>
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QSpinBox" name="regionHeight">
+       <widget class="QSpinBox" name="height">
         <property name="suffix">
          <string> px</string>
         </property>
@@ -95,7 +95,17 @@
          <number>100</number>
         </property>
         <property name="value">
-         <number>20</number>
+         <number>50</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2" colspan="2">
+       <widget class="QCheckBox" name="onTop">
+        <property name="text">
+         <string>Always on top</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -105,7 +115,13 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Recognizer and Hinter</string>
+      <string>Algorithms - Recognizer and Hinter</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">

@@ -26,6 +26,7 @@
 #include <QFile>
 #include <QImage>
 #include <QDesktopWidget>
+#include <QSettings>
 
 #define DEFAULT_WIDTH 252
 #define DEFAULT_HEIGHT 330
@@ -33,25 +34,44 @@
 Window::Window( QWidget *parent )
     : QWidget( parent )
     , ui( new Ui::WindowForm )
+    , m_settings( new QSettings() )
 {
     // create ui
     ui->setupUi( this );
     QDesktopWidget dw;
-    ui->xOffset->setMaximum( dw.width() );
-    ui->yOffset->setMaximum( dw.height() );
-    ui->regionWidth->setMaximum( dw.width() );
-    ui->regionHeight->setMaximum( dw.height() );
-    ui->xOffset->setValue( (dw.width() - DEFAULT_WIDTH) / 2 );
-    ui->yOffset->setValue( (dw.height() - DEFAULT_HEIGHT) / 2 );
-    ui->regionWidth->setValue( DEFAULT_WIDTH );
-    ui->regionHeight->setValue( DEFAULT_HEIGHT );
-    connect( ui->xOffset, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
-    connect( ui->yOffset, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
-    connect( ui->regionWidth, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
-    connect( ui->regionHeight, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
+    ui->left->setMaximum( dw.width() );
+    ui->top->setMaximum( dw.height() );
+    ui->width->setMaximum( dw.width() );
+    ui->height->setMaximum( dw.height() );
+    // init defaults..
+    if ( !m_settings->contains( "rect/left" ) ) {
+        ui->left->setValue( (dw.width() - DEFAULT_WIDTH) / 2 );
+        ui->top->setValue( (dw.height() - DEFAULT_HEIGHT) / 2 );
+        ui->width->setValue( DEFAULT_WIDTH );
+        ui->height->setValue( DEFAULT_HEIGHT );
+    }
+    // ..or reload previous values
+    else {
+        ui->left->setValue( m_settings->value( "rect/left" ).toInt() );
+        ui->top->setValue( m_settings->value( "rect/top" ).toInt() );
+        ui->width->setValue( m_settings->value( "rect/width" ).toInt() );
+        ui->height->setValue( m_settings->value( "rect/height" ).toInt() );
+        ui->frequency->setValue( m_settings->value( "rect/frequency" ).toInt() );
+        ui->onTop->setChecked( m_settings->value( "rect/ontop" ).toBool() );
+        ui->hBlocks->setValue( m_settings->value( "algo/hblocks" ).toInt() );
+        ui->vBlocks->setValue( m_settings->value( "algo/vblocks" ).toInt() );
+        ui->sensitivity->setValue( m_settings->value( "algo/sensitivity" ).toInt() );
+        ui->highlight->setChecked( m_settings->value( "algo/highlight" ).toBool() );
+    }
+    connect( ui->left, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
+    connect( ui->top, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
+    connect( ui->width, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
+    connect( ui->height, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
     connect( ui->frequency, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
+    connect( ui->onTop, SIGNAL(toggled(bool)), this, SLOT(slotOnTopChanged()) );
     connect( ui->hBlocks, SIGNAL(valueChanged(int)), this, SLOT(slotRecParamsChanged()) );
     connect( ui->vBlocks, SIGNAL(valueChanged(int)), this, SLOT(slotRecParamsChanged()) );
+    slotOnTopChanged();
 
     // create and train the classifier
     m_classifier = new Classifier( QSize( 30, 30 ), this );
@@ -77,6 +97,8 @@ Window::Window( QWidget *parent )
 
 Window::~Window()
 {
+    saveSettings();
+    delete m_settings;
     delete m_hinter;
     delete m_recognizer;
     delete m_capture;
@@ -84,9 +106,34 @@ Window::~Window()
     delete ui;
 }
 
+void Window::saveSettings()
+{
+    m_settings->setValue( "rect/left", ui->left->value() );
+    m_settings->setValue( "rect/top", ui->top->value() );
+    m_settings->setValue( "rect/width", ui->width->value() );
+    m_settings->setValue( "rect/height", ui->height->value() );
+    m_settings->setValue( "rect/frequency", ui->frequency->value() );
+    m_settings->setValue( "rect/ontop", ui->onTop->isChecked() );
+    m_settings->setValue( "algo/hblocks", ui->hBlocks->value() );
+    m_settings->setValue( "algo/vblocks", ui->vBlocks->value() );
+    m_settings->setValue( "algo/sensitivity", ui->sensitivity->value() );
+    m_settings->setValue( "algo/highlight", ui->highlight->isChecked() );
+}
+
+void Window::slotOnTopChanged()
+{
+    Qt::WindowFlags flags = windowFlags();
+    if ( ui->onTop->isChecked() )
+        flags |= Qt::WindowStaysOnTopHint;
+    else
+        flags &= ~Qt::WindowStaysOnTopHint;
+    setWindowFlags( flags );
+    show();
+}
+
 void Window::slotCapParamsChanged()
 {
-    QRect captureRect( ui->xOffset->value(), ui->yOffset->value(), ui->regionWidth->value(), ui->regionHeight->value() );
+    QRect captureRect( ui->left->value(), ui->top->value(), ui->width->value(), ui->height->value() );
     int adjW = captureRect.width() % 30;
     int adjH = captureRect.height() % 30;
     m_capture->setGeometry( captureRect.adjusted( 0, 0, adjW, adjH ) );

@@ -22,6 +22,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setOrganizationName( "biocheat" );
+    a.setApplicationName( "BioCheat" );
+    a.setApplicationVersion( "0.9" );
 
     Window w;
     w.show();
