@@ -12,5 +12,6 @@
         <file>bomb2.png</file>
         <file>bomb6.png</file>
         <file>icon-invalid.png</file>
+        <file>bomb3.png</file>
     </qresource>
 </RCC>

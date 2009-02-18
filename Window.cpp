@@ -224,7 +224,11 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
     if ( !hr.isEmpty() && ui->display4->isChecked() ) {
 
         bool useBest = ui->apBest->isChecked();
-        HintResult r = useBest ? hr.first() : hr.at( qrand() % hr.size() );
+        HintResult r;
+        if ( useBest || hr.size() == 1 )
+            r = hr.first();
+        else
+            r = hr[ qrand() % hr.size() ];
 
         if ( useBest ) {
             QCursor::setPos( ((qrand() % 2) ? r.mouseFrom : r.mouseTo) + m_capture->geometry().topLeft() );
