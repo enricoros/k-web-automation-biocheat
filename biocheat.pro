@@ -1,8 +1,8 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-02-16T12:40:55
 # -------------------------------------------------
-QT += svg \
-    webkit
+QT += core gui
+CONFIG += release
 TARGET = biocheat
 TEMPLATE = app
 SOURCES += main.cpp \
