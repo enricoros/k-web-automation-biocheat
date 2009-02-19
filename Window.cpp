@@ -20,7 +20,6 @@
 #include "Capture.h"
 #include "Classifier.h"
 #include "Recognizer.h"
-#include "SimpleHinter.h"
 #include "ui_Window.h"
 
 #include <QCursor>
@@ -205,7 +204,7 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
     if ( ui->display0->isChecked() )
         return;
 
-    // show original image
+    // 1. show original image
     ui->visualizer->setMinimumSize( pixmap.size() );
     ui->visualizer->setPixmapCursorPos( cursor );
     if ( ui->display1->isChecked() ) {
@@ -213,7 +212,7 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
         return;
     }
 
-    // recognize image
+    // 2. recognize image
     bool displayRec = ui->display2->isChecked();
     float sensitivity = (float)ui->sensitivity->value() / 100.0;
     RecoResult rr = m_recognizer->recognize( pixmap, sensitivity, displayRec );
@@ -228,7 +227,7 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
         return;
     }
 
-    // find hints and show result
+    // 3. find hints and show result
     bool process = ui->display3->isChecked() | ui->display4->isChecked();
     if ( !process )
         return;
@@ -236,20 +235,36 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
     HintResults hr = m_hinter->process( rr, pixmap, ui->highlight->isChecked() );
     ui->visualizer->setPixmap( m_hinter->output() );
 
-    // autoplay, if asked
-    if ( !hr.isEmpty() && ui->display4->isChecked() ) {
+    // 4. autoplay, if asked
+    if ( hr.isEmpty() || !ui->display4->isChecked() )
+        return;
 
-        bool useBest = ui->apBest->isChecked();
-        HintResult r;
-        if ( useBest || hr.size() == 1 )
-            r = hr.first();
-        else
-            r = hr[ qrand() % hr.size() ];
+    /* AUTOPLAY logic:
+       - use LAST MOVE if only half of the previous (= 1 click) was performed
+       - use the BEST MOVE if selected and perform 1 click
+       - or choose a RANDOM MOVE and perform 2 clicks
+    */
 
-        if ( useBest ) {
-            QCursor::setPos( ((qrand() % 2) ? r.mouseFrom : r.mouseTo) + m_capture->geometry().topLeft() );
+    // finish LAST MOVE if begun...
+    if ( !m_lastHint.mouseFrom.isNull() ) {
+        QCursor::setPos( m_lastHint.mouseTo + m_capture->geometry().topLeft() );
+        leftClick();
+        m_lastHint.mouseFrom = QPoint();
+    }
+    // ...or perform a NEW MOVE
+    else {
+
+        // perform the BEST MOVE (half)
+        if ( ui->apBest->isChecked() || hr.size() == 1 ) {
+            HintResult r = hr.first();
+            QCursor::setPos( r.mouseFrom + m_capture->geometry().topLeft() );
             leftClick();
-        } else {
+            m_lastHint = r;
+        }
+
+        // perform a RANDOM MOVE (complete)
+        else {
+            HintResult r = hr[ qrand() % hr.size() ];
             QCursor::setPos( r.mouseFrom + m_capture->geometry().topLeft() );
             leftClick();
             QCursor::setPos( r.mouseTo + m_capture->geometry().topLeft() );
