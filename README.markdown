@@ -2,10 +2,11 @@ BioCheat - A Facebook Biotronic Cheat..er.. Hinter!
 ---------------------------------------------------
 
 This project is a mix of different small things:
- - image processing (Training and recognition of patterns)
- - AI (Solving the Biotronics puzzle)
- - screen grabbing (ok, that's a oneliner :-))
- - visualizing the 'moves'
+
+- image processing (Training and recognition of patterns)
+- AI (Solving the Biotronics puzzle)
+- screen grabbing (ok, that's a oneliner :-))
+- visualizing the 'moves'
 
 <div><img src="http://github.com/Eros/biocheat/blob?path[]=screenshot.png&raw=true"></div>
 
