@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>347</width>
-    <height>319</height>
+    <width>362</width>
+    <height>270</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>BioCheat v.0.8</string>
+   <string>BioCheat 0.9.1 -koralmod-</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -238,30 +238,59 @@ p, li { white-space: pre-wrap; }
     <widget class="QGroupBox" name="groupBox_2">
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
+       <widget class="QRadioButton" name="display0">
+        <property name="text">
+         <string>&amp;Off</string>
+        </property>
+        <property name="shortcut">
+         <string>Alt+O</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
        <widget class="QRadioButton" name="display1">
         <property name="text">
-         <string>Capture</string>
+         <string>&amp;Capture</string>
+        </property>
+        <property name="shortcut">
+         <string>Alt+C</string>
         </property>
         <property name="checked">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="0" column="2">
        <widget class="QRadioButton" name="display2">
         <property name="text">
-         <string>Recognize</string>
+         <string>&amp;Recognize</string>
+        </property>
+        <property name="shortcut">
+         <string>Alt+R</string>
         </property>
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QRadioButton" name="display4">
+       <widget class="QRadioButton" name="display3">
         <property name="text">
-         <string>AutoPlay!</string>
+         <string>&amp;Hints</string>
+        </property>
+        <property name="shortcut">
+         <string>Alt+H</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="4">
+      <item row="0" column="4">
+       <widget class="QRadioButton" name="display4">
+        <property name="text">
+         <string>&amp;AutoPlay!</string>
+        </property>
+        <property name="shortcut">
+         <string>Alt+A</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="5">
        <widget class="Visualizer" name="visualizer">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -274,13 +303,6 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QRadioButton" name="display3">
-        <property name="text">
-         <string>Hints</string>
         </property>
        </widget>
       </item>

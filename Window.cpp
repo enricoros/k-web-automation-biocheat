@@ -78,6 +78,7 @@ AppWindow::AppWindow( QWidget *parent )
     connect( ui->width, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
     connect( ui->height, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
     connect( ui->frequency, SIGNAL(valueChanged(int)), this, SLOT(slotCapParamsChanged()) );
+    connect( ui->display0, SIGNAL(toggled(bool)), this, SLOT(slotOffToggled()) );
     connect( ui->onTop, SIGNAL(toggled(bool)), this, SLOT(slotOnTopChanged()) );
     connect( ui->hBlocks, SIGNAL(valueChanged(int)), this, SLOT(slotRecParamsChanged()) );
     connect( ui->vBlocks, SIGNAL(valueChanged(int)), this, SLOT(slotRecParamsChanged()) );
@@ -102,6 +103,7 @@ AppWindow::AppWindow( QWidget *parent )
     m_capture = new Capture( this );
     connect( m_capture, SIGNAL(gotPixmap(const QPixmap &, const QPoint &)),
              this, SLOT(slotProcessPixmap(const QPixmap &, const QPoint &)) );
+    slotOffToggled();
     slotCapParamsChanged();
 }
 
@@ -141,6 +143,11 @@ void AppWindow::slotOnTopChanged()
         flags &= ~Qt::WindowStaysOnTopHint;
     setWindowFlags( flags );
     show();
+}
+
+void AppWindow::slotOffToggled()
+{
+    m_capture->setEnabled( !ui->display0->isChecked() );
 }
 
 void AppWindow::slotCapParamsChanged()
@@ -195,6 +202,9 @@ void leftClick()
 
 void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor )
 {
+    if ( ui->display0->isChecked() )
+        return;
+
     // show original image
     ui->visualizer->setMinimumSize( pixmap.size() );
     ui->visualizer->setPixmapCursorPos( cursor );

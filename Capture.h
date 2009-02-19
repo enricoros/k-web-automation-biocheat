@@ -30,6 +30,8 @@ class Capture : public QObject
     public:
         Capture( QObject * parent );
 
+        void setEnabled( bool enabled );
+        bool enabled() const;
         void setGeometry( const QRect & geometry );
         QRect geometry() const;
         void setFrequency( int fps );
@@ -44,6 +46,7 @@ class Capture : public QObject
     private:
         QBasicTimer m_timer;
         QRect m_geometry;
+        bool m_enabled;
         int m_fps;
 
 #if 0

@@ -48,6 +48,7 @@ class AppWindow : public QWidget
 
     private Q_SLOTS:
         void slotOnTopChanged();
+        void slotOffToggled();
         void slotCapParamsChanged();
         void slotRecParamsChanged();
         void slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor );

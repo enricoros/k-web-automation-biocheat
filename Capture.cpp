@@ -31,6 +31,7 @@
 
 Capture::Capture( QObject * parent )
     : QObject( parent )
+    , m_enabled( false )
     , m_fps( 0 )
 #if 0
     , m_currentIndex( 0 )
@@ -44,6 +45,16 @@ Capture::Capture( QObject * parent )
         m_images.append( QImage( it.next(), "PNG" ) );
     Q_ASSERT( m_images.size() );
 #endif
+}
+
+void Capture::setEnabled( bool enabled )
+{
+    m_enabled = enabled;
+}
+
+bool Capture::enabled() const
+{
+    return m_enabled;
 }
 
 void Capture::setGeometry( const QRect & geometry )
@@ -72,8 +83,11 @@ void Capture::timerEvent( QTimerEvent * event )
     if ( event->timerId() != m_timer.timerId() || m_geometry.isNull() )
         return QObject::timerEvent( event );
 
+    if ( !m_enabled )
+        return;
+
     QPixmap grabbedPixmap = QPixmap::grabWindow(
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11)
             QX11Info::appRootWindow(),
 #else
             QApplication::desktop()->winId(),
