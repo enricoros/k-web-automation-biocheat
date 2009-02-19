@@ -153,7 +153,7 @@ void AppWindow::slotRecParamsChanged()
     m_recognizer->setup( ui->hBlocks->value(), ui->vBlocks->value() );
 }
 
-#ifdef Q_OS_UNIX
+#ifdef Q_WS_X11
 
 // use XInput for queuing a click event
 #include <QX11Info>
@@ -163,7 +163,7 @@ void leftClick()
     XTestFakeButtonEvent( QX11Info::display(), 1, true, CurrentTime );
 }
 
-#elif Q_OS_WIN32
+#elif Q_WS_WIN
 
 void leftClick()
 {
@@ -183,7 +183,7 @@ void leftClick()
 
 #else
 
-#warning leftClick not implemented for this platform
+#warning leftClick not implemented for this Windowing System
 
 #endif
 
