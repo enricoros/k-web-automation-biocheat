@@ -21,11 +21,13 @@
 
 #include <QWidget>
 #include <QPixmap>
+#include <QTime>
 #include "SimpleHinter.h"
 class Capture;
 class Classifier;
 class Recognizer;
 class QSettings;
+
 
 namespace Ui { class WindowForm; }
 
@@ -46,6 +48,7 @@ class AppWindow : public QWidget
         QSettings * m_settings;
         QPixmap m_invalidPixmap;
         HintResult m_lastHint;
+        QTime m_lastNextTime;
 
     private Q_SLOTS:
         void slotOnTopChanged();

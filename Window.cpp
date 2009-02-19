@@ -170,7 +170,10 @@ void AppWindow::slotRecParamsChanged()
 #include <X11/extensions/XTest.h>
 void leftClick()
 {
+    // left down
     XTestFakeButtonEvent( QX11Info::display(), 1, true, CurrentTime );
+    // left up
+    XTestFakeButtonEvent( QX11Info::display(), 1, false, CurrentTime );
 }
 
 #elif defined(Q_WS_WIN)
@@ -224,8 +227,20 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
     // bail out if too invalid
     if ( rr.invalid >= ui->valid->value() ) {
         ui->visualizer->setPixmap( m_invalidPixmap );
+
+        // skip completely invalid screens (half-invalid is the "next" case)
+        if ( rr.invalid < rr.total / 2 )
+            return;
+
+        // click on NEXT every 0.4s
+        if ( !m_lastNextTime.isValid() || m_lastNextTime.elapsed() > 400 ) {
+            m_lastNextTime.start();
+            QCursor::setPos( m_capture->geometry().topLeft() + QPoint( 126 + (qrand() % 16), 280 + (qrand() % 16) ) );
+            leftClick();
+        }
         return;
     }
+    m_lastNextTime = QTime();
 
     // 3. find hints and show result
     bool process = ui->display3->isChecked() | ui->display4->isChecked();
