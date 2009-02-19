@@ -21,3 +21,7 @@ HEADERS += Window.h \
 FORMS += Window.ui
 RESOURCES += data/data.qrc
 unix: LIBS += -lXtst
+win32 {
+    CONFIG += embed_manifest_exe
+    RC_FILE = biocheat.rc
+}

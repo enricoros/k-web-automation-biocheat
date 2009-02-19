@@ -163,7 +163,7 @@ double Classifier::compareSpectra( const Spectrum * a, const Spectrum * b ) cons
     int size = a->hue.size();
 
     for ( int j = 0; j < size; j++ ) {
-        double alpha = 2 * M_PI * (double)(a->hue[ j ] - b->hue[ j ]);
+        double alpha = 6.28318530718 * (double)(a->hue[ j ] - b->hue[ j ]);
         double fA = cos( alpha ) - fabs( sin( alpha ) );
         confidence += fA * a->weight[ j ] * b->weight[ j ];
     }

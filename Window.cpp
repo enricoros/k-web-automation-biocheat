@@ -35,7 +35,11 @@
 AppWindow::AppWindow( QWidget *parent )
     : QWidget( parent )
     , ui( new Ui::WindowForm )
+#if defined(Q_OS_WIN)
+    , m_settings( new QSettings( "biocheat.ini", QSettings::IniFormat ) )
+#else
     , m_settings( new QSettings() )
+#endif
     , m_invalidPixmap( ":/data/icon-invalid.png" )
 {
     // create ui
@@ -153,7 +157,7 @@ void AppWindow::slotRecParamsChanged()
     m_recognizer->setup( ui->hBlocks->value(), ui->vBlocks->value() );
 }
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11)
 
 // use XInput for queuing a click event
 #include <QX11Info>
@@ -163,7 +167,9 @@ void leftClick()
     XTestFakeButtonEvent( QX11Info::display(), 1, true, CurrentTime );
 }
 
-#elif Q_WS_WIN
+#elif defined(Q_WS_WIN)
+
+#include <windows.h>
 
 void leftClick()
 {
