@@ -48,7 +48,7 @@ SimpleHinter::SimpleHinter( QObject * parent )
 
 bool lowerHint( const HintResult & h1, const HintResult & h2 )
 {
-    return h1.count > h2.count;
+    return h1.count > h2.count || h1.fromY > h2.fromY;
 }
 
 HintResults SimpleHinter::process( const RecoResult & recoResult, const QPixmap & origPixmap, bool highlight )
@@ -120,7 +120,10 @@ HintResults SimpleHinter::process( const RecoResult & recoResult, const QPixmap 
             pp.setPen( QPen( Qt::red, 2 ) );
             pp.drawRect( rect );
         }
-        pp.setPen( QPen( Qt::white, 2 ) );
+        QLinearGradient lg( x1, y1, x2, y2 );
+        lg.setColorAt( 0.0, Qt::black );
+        lg.setColorAt( 1.0, Qt::white );
+        pp.setPen( QPen( lg, 2 ) );
         pp.drawLine( x1, y1, x2, y2 );
 
         // draw number

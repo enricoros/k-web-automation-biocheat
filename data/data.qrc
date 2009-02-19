@@ -1,5 +1,12 @@
 <RCC>
     <qresource prefix="/data" >
+        <file>bomb0.png</file>
+        <file>bomb1.png</file>
+        <file>bomb2.png</file>
+        <file>bomb3.png</file>
+        <file>bomb4.png</file>
+        <file>bomb5.png</file>
+        <file>bomb6.png</file>
         <file>class0.png</file>
         <file>class1.png</file>
         <file>class2.png</file>
@@ -7,11 +14,13 @@
         <file>class4.png</file>
         <file>class5.png</file>
         <file>class6.png</file>
-        <file>bomb0.png</file>
-        <file>bomb1.png</file>
-        <file>bomb2.png</file>
-        <file>bomb6.png</file>
+        <file>eye0.png</file>
+        <file>eye1.png</file>
+        <file>eye2.png</file>
+        <file>eye3.png</file>
+        <file>eye4.png</file>
+        <file>eye5.png</file>
+        <file>eye6.png</file>
         <file>icon-invalid.png</file>
-        <file>bomb3.png</file>
     </qresource>
 </RCC>

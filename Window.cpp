@@ -87,8 +87,8 @@ AppWindow::AppWindow( QWidget *parent )
     m_classifier = new Classifier( QSize( 30, 30 ), this );
     for ( int i = 0; i < 7; i++ ) {
         m_classifier->addClass( i, QImage( QString( ":/data/class%1.png" ).arg( i ), "PNG" ) );
-        if ( QFile::exists( QString( ":/data/bomb%1.png" ).arg( i ) ) )
-            m_classifier->addClass( i, QImage( QString( ":/data/bomb%1.png" ).arg( i ), "PNG" ) );
+        m_classifier->addClass( i, QImage( QString( ":/data/bomb%1.png" ).arg( i ), "PNG" ) );
+        m_classifier->addClass( i, QImage( QString( ":/data/eye%1.png" ).arg( i ), "PNG" ) );
     }
 
     // create the recognizer
@@ -229,7 +229,7 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
         ui->visualizer->setPixmap( m_invalidPixmap );
 
         // skip completely invalid screens (half-invalid is the "next" case)
-        if ( rr.invalid < rr.total / 2 )
+        if ( !ui->display4->isChecked() || rr.invalid > (rr.total / 2) )
             return;
 
         // click on NEXT every 0.4s
@@ -240,7 +240,7 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
         }
         return;
     }
-    m_lastNextTime = QTime();
+    m_lastNextTime.restart();
 
     // 3. find hints and show result
     bool process = ui->display3->isChecked() | ui->display4->isChecked();
