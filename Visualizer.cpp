@@ -1,6 +1,6 @@
 /***************************************************************************
- * Copyright (c) 2009 Enrico Ros                                           *
- *         2009 Enrico Ros <enrico.ros@gmail.com>                          *
+ * Copyright (c) 2009 Koral                                                *
+ *         2009 Koral <koral@email.it>                                     *
  *                                                                         *
  * Permission is hereby granted, free of charge, to any person             *
  * obtaining a copy of this software and associated documentation          *
