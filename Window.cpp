@@ -251,17 +251,24 @@ void AppWindow::slotProcessPixmap( const QPixmap & pixmap, const QPoint & cursor
     ui->visualizer->setPixmap( m_hinter->output() );
 
     // 4. autoplay, if asked
-    if ( hr.isEmpty() || !ui->display4->isChecked() )
+    if ( !ui->display4->isChecked() )
         return;
 
     /* AUTOPLAY logic:
+       - go MAD if no matches
        - use LAST MOVE if only half of the previous (= 1 click) was performed
        - use the BEST MOVE if selected and perform 1 click
        - or choose a RANDOM MOVE and perform 2 clicks
     */
 
+    // go MAD if no matches
+    if ( hr.isEmpty() ) {
+        QRect rect = m_capture->geometry();
+        QCursor::setPos( rect.topLeft() + QPoint( qrand() % rect.width(), qrand() % rect.height() ) );
+        leftClick();
+    }
     // finish LAST MOVE if begun...
-    if ( !m_lastHint.mouseFrom.isNull() ) {
+    else if ( !m_lastHint.mouseFrom.isNull() ) {
         QCursor::setPos( m_lastHint.mouseTo + m_capture->geometry().topLeft() );
         leftClick();
         m_lastHint.mouseFrom = QPoint();

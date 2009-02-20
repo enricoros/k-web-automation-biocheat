@@ -18,6 +18,7 @@
 
 #include "SimpleHinter.h"
 #include <QPainter>
+#include <QHash>
 
 SimpleHinter::SimpleHinter( QObject * parent )
     : QObject( parent )
@@ -28,10 +29,10 @@ SimpleHinter::SimpleHinter( QObject * parent )
 #define VALUE( a, b ) R.values[ (a) + (b) * W ]
 #define SWAP( x1, y1, dx, dy ) \
     if ( INBOUND( x1 + dx, y1 + dy ) ) { \
-        int v1 = VALUE( x, y ); \
-        int v2 = VALUE( x + dx, y + dy ); \
-        VALUE( x, y ) = v2; \
-        VALUE( x + dx, y + dy ) = v1; \
+        int v1 = VALUE( x1, y1 ); \
+        int v2 = VALUE( x1 + dx, y1 + dy ); \
+        VALUE( x1, y1 ) = v2; \
+        VALUE( x1 + dx, y1 + dy ) = v1; \
         int count = crossCount( R, x1 + dx, y1 + dy, W, H ); \
         if ( count >= 3 ) { \
             HintResult hr; \
@@ -42,8 +43,22 @@ SimpleHinter::SimpleHinter( QObject * parent )
             hr.count = count; \
             results.append( hr ); \
         } \
-        VALUE( x, y ) = v1; \
+        VALUE( x1, y1 ) = v1; \
         VALUE( x + dx, y + dy ) = v2; \
+    }
+#define EAT( x1, y1, dx, dy ) \
+    if ( INBOUND( x1 + dx, y1 + dy ) ) { \
+        int val = VALUE( x1 + dx, y1 + dy ); \
+        if ( val != -1 ) { \
+            int count = colorMap[ val ]; \
+            HintResult hr; \
+            hr.fromX = x1; \
+            hr.fromY = y1; \
+            hr.toX = x1 + dx; \
+            hr.toY = y1 + dy; \
+            hr.count = count; \
+            results.append( hr ); \
+        } \
     }
 
 bool lowerHint( const HintResult & h1, const HintResult & h2 )
@@ -71,6 +86,34 @@ HintResults SimpleHinter::process( const RecoResult & recoResult, const QPixmap 
             SWAP( x, y, +0, +1 );
         }
     }
+
+    // PANIC: no results: try random moves on unknown blocks
+    if ( results.isEmpty() || (results.size() == 1 && !(qrand() % 4) ) ) {
+
+        // accumulate statistics of the colors
+        QHash< int, int > colorMap;
+        for ( int i = 0; i < recoResult.total; i++ ) {
+            int val = recoResult.values[ i ];
+            if ( !colorMap.contains( val ) )
+                colorMap[ val ] = 1;
+            else
+                colorMap[ val ]++;
+        }
+
+        // eat the surroundings
+        for ( int y = 0; y < H; y++ ) {
+            for ( int x = 0; x < W; x++ ) {
+                if ( VALUE( x, y ) != -1 )
+                    continue;
+                EAT( x, y, -1, +0 );
+                EAT( x, y, +1, +0 );
+                EAT( x, y, +0, -1 );
+                EAT( x, y, +0, +1 );
+            }
+        }
+    }
+
+    // sort the results for better chances
     qSort( results.begin(), results.end(), lowerHint );
 
     // regen the output pixmap
