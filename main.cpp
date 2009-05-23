@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setOrganizationName( "biocheat" );
     a.setApplicationName( "BioCheat" );
-    a.setApplicationVersion( "0.9" );
+    a.setApplicationVersion( "0.9.6" );
 
     AppWindow w;
     w.show();

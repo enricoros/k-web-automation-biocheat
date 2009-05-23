@@ -81,6 +81,10 @@ AppWindow::AppWindow( QWidget *parent )
     connect( ui->onTop, SIGNAL(toggled(bool)), this, SLOT(slotOnTopChanged()) );
     connect( ui->hBlocks, SIGNAL(valueChanged(int)), this, SLOT(slotRecParamsChanged()) );
     connect( ui->vBlocks, SIGNAL(valueChanged(int)), this, SLOT(slotRecParamsChanged()) );
+    connect( ui->capBox, SIGNAL(toggled(bool)), this, SLOT(slotGroupToggled(bool)) );
+    connect( ui->groupBox, SIGNAL(toggled(bool)), this, SLOT(slotGroupToggled(bool)) );
+    ui->capBox->setChecked(false);
+    ui->groupBox->setChecked(false);
     slotOnTopChanged();
 
     // create and train the classifier
@@ -131,6 +135,13 @@ void AppWindow::saveSettings()
     m_settings->setValue( "algo/sensitivity", ui->sensitivity->value() );
     m_settings->setValue( "algo/highlight", ui->highlight->isChecked() );
     m_settings->setValue( "algo/apBest", ui->apBest->isChecked() );
+}
+
+void AppWindow::slotGroupToggled(bool on)
+{
+    dynamic_cast<QWidget *>(sender())->setMaximumHeight( on ? QWIDGETSIZE_MAX : 28 );
+    layout()->activate();
+    adjustSize();
 }
 
 void AppWindow::slotOnTopChanged()

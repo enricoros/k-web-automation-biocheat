@@ -51,6 +51,7 @@ class AppWindow : public QWidget
         QTime m_lastNextTime;
 
     private Q_SLOTS:
+        void slotGroupToggled(bool on);
         void slotOnTopChanged();
         void slotOffToggled();
         void slotCapParamsChanged();
