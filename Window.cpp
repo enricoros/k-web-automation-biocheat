@@ -207,6 +207,42 @@ void leftClick()
     ::SendInput( 1, &Input, sizeof(INPUT) );
 }
 
+#elif defined(Q_WS_MAC)
+
+/*
+ *       Specific MAC OS X function to handle mouse pointer
+ *       Battista Biggio, freezebat@hotmail.com
+ */
+
+#import <ApplicationServices/ApplicationServices.h>
+
+//Drag x to y using mouse low level functions
+void leftClick()
+{
+   QPoint currPos = QCursor::pos();
+
+   // The data structure CGPoint represents a point in a two-dimensional
+   // coordinate system.  Here, X and Y distance from upper left, in pixels.
+   //
+   CGPoint pt;
+   pt.x = currPos.x();
+   pt.y = currPos.y();
+
+   // This is where the magic happens.  See CGRemoteOperation.h for details.
+   //
+   // CGPostMouseEvent( CGPoint        mouseCursorPosition,
+   //                   boolean_t      updateMouseCursorPosition,
+   //                   CGButtonCount  buttonCount,
+   //                   boolean_t      mouseButtonDown, ... )
+   //
+   // So, we feed coordinates to CGPostMouseEvent, put the mouse there,
+   // then click and release.
+   //
+
+   CGPostMouseEvent( pt, 1, 1, 1 );
+   CGPostMouseEvent( pt, 1, 1, 0 );
+}
+
 #else
 
 #warning leftClick not implemented for this Windowing System
